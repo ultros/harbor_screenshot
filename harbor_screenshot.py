@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 import re
 import argparse
+import pathlib
 
 
 def process_ips(ips, port):
@@ -24,8 +25,8 @@ def take_screenshot(ip, port):
     profile = webdriver.ChromeOptions()
     profile.accept_insecure_certs = True
     profile.headless = True
-    profile.set_capability("http.response.timeout", 30)
     driver = webdriver.Chrome(options=profile)
+    driver.set_page_load_timeout(30)
 
     match port:
         case 80:
@@ -43,8 +44,7 @@ def take_screenshot(ip, port):
                     return f"Connection Refused ({ip})"
 
     time.sleep(3)  # ensure page loads
-
-    driver.save_screenshot("screenshots/" + ip + ".png")
+    driver.save_screenshot(os.getcwd() + "/screenshots/" + ip + ".png")
 
 
 def main():
