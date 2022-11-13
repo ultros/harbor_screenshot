@@ -17,7 +17,8 @@ def screencapture():
 
         for future in concurrent.futures.as_completed(futures):
             data = future.result()
-            print(data)
+            if data:  # if error, print error
+                print(data)
 
 
 def query_ip(ip):
@@ -33,7 +34,7 @@ def query_ip(ip):
         if re.search("ERR_CONNECTION_REFUSED", str(e)):
             return f"Connection Refused ({ip})"
 
-    time.sleep(3)
+    time.sleep(3)  # ensure page loads
 
     driver.save_screenshot(ip + ".png")
 
