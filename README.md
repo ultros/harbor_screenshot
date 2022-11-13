@@ -1,7 +1,7 @@
 # harbor_screenshot
 Concurrent website screenshot tool. Snap a screenshot of the initial webpage loaded.
 
-This is useful when used with a port scanner for enumeration.
+This is useful when used in conjugation with a port scanner.
 
 ### Example Screenshots  
 
