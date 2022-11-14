@@ -9,7 +9,7 @@ import pathlib
 
 
 def process_ips(ips, port):
-    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
         futures = []
 
         for ip in ips:
@@ -22,29 +22,37 @@ def process_ips(ips, port):
 
 
 def take_screenshot(ip, port):
-    profile = webdriver.ChromeOptions()
-    profile.accept_insecure_certs = True
-    profile.headless = True
-    driver = webdriver.Chrome(options=profile)
-    driver.set_page_load_timeout(30)
+    if not os.path.exists(os.getcwd() + "/screenshots/" + ip + ".png"):
+        profile = webdriver.ChromeOptions()
+        profile.accept_insecure_certs = True
+        profile.headless = False
+        driver = webdriver.Chrome(options=profile)
+        driver.set_page_load_timeout(30)
 
-    match port:
-        case 80:
-            try:
-                driver.get(f"http://{ip}")
-            except WebDriverException as e:
-                if re.search("ERR_CONNECTION_REFUSED", str(e)):
-                    return f"Connection Refused ({ip})"
+        print(f"Trying: {ip}")
+        match port:
+            case 80:
+                try:
+                    driver.get(f"http://{ip}")
+                except WebDriverException as e:
+                    if re.search("ERR_CONNECTION_REFUSED", str(e)):
+                        return f"Connection Refused ({ip})"
 
-        case 443:
-            try:
-                driver.get(f"https://{ip}")
-            except WebDriverException as e:
-                if re.search("ERR_CONNECTION_REFUSED", str(e)):
-                    return f"Connection Refused ({ip})"
+                finally:
+                    time.sleep(3)  # ensure page loads
+                    driver.save_screenshot(os.getcwd() + "/screenshots/" + ip + ".png")
 
-    time.sleep(3)  # ensure page loads
-    driver.save_screenshot(os.getcwd() + "/screenshots/" + ip + ".png")
+            case 443:
+                try:
+                    driver.get(f"https://{ip}")
+                except WebDriverException as e:
+                    if re.search("ERR_CONNECTION_REFUSED", str(e)):
+                        return f"Connection Refused ({ip})"
+                finally:
+                    time.sleep(3)  # ensure page loads
+                    driver.save_screenshot(os.getcwd() + "/screenshots/" + ip + ".png")
+
+
 
 
 def main():
