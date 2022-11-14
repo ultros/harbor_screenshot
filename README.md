@@ -3,7 +3,7 @@ Concurrent website screenshot tool. Snap a screenshot of the initial webpage loa
 
 This is useful when used with a port scanner.
 
-### Formatting Wordlist for Program Argument
+### Formatting IP Address List for Program Argument
 This method utilizes an active portscan database from the "harbor.py" portscanner.
 
 This method dumps all port scan results where the port is equal to 80 to test.txt.
