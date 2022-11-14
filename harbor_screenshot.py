@@ -53,8 +53,6 @@ def take_screenshot(ip, port):
                     driver.save_screenshot(os.getcwd() + "/screenshots/" + ip + ".png")
 
 
-
-
 def main():
     parser = argparse.ArgumentParser(description="Screenshot Taker")
     parser.add_argument('-i', '--ip', nargs='+', required=True, type=str,
