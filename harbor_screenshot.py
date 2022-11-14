@@ -22,10 +22,11 @@ def process_ips(ips, port):
 
 
 def take_screenshot(ip, port):
-    if not os.path.exists(os.getcwd() + "/screenshots/" + ip + ".png"):
+    if not os.path.exists(os.getcwd() + "/screenshots/" + ip + ".png") or not \
+            os.path.exists(os.getcwd() + "/screenshots/" + ip + "-HTTPS.png"):
         profile = webdriver.ChromeOptions()
         profile.accept_insecure_certs = True
-        profile.headless = False
+        profile.headless = True
         driver = webdriver.Chrome(options=profile)
         driver.set_page_load_timeout(30)
 
@@ -38,9 +39,8 @@ def take_screenshot(ip, port):
                     if re.search("ERR_CONNECTION_REFUSED", str(e)):
                         return f"Connection Refused ({ip})"
 
-                finally:
-                    time.sleep(3)  # ensure page loads
-                    driver.save_screenshot(os.getcwd() + "/screenshots/" + ip + ".png")
+                time.sleep(3)  # ensure page loads
+                driver.save_screenshot(os.getcwd() + "/screenshots/" + ip + ".png")
 
             case 443:
                 try:
@@ -48,9 +48,10 @@ def take_screenshot(ip, port):
                 except WebDriverException as e:
                     if re.search("ERR_CONNECTION_REFUSED", str(e)):
                         return f"Connection Refused ({ip})"
-                finally:
-                    time.sleep(3)  # ensure page loads
-                    driver.save_screenshot(os.getcwd() + "/screenshots/" + ip + ".png")
+
+                time.sleep(3)  # ensure page loads
+                driver.save_screenshot(os.getcwd() + "/screenshots/" + ip + "-HTTPS.png")
+
 
 
 def main():
