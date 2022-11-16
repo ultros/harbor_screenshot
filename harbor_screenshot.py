@@ -5,11 +5,11 @@ from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 import re
 import argparse
-import pathlib
+from core import settings
 
 
 def process_ips(ips, port):
-    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+    with concurrent.futures.ThreadPoolExecutor(settings.CoreSettings.max_workers) as executor:
         futures = []
 
         for ip in ips:
@@ -25,10 +25,10 @@ def take_screenshot(ip, port):
     if not os.path.exists(os.getcwd() + "/screenshots/" + ip + ".png") or not \
             os.path.exists(os.getcwd() + "/screenshots/" + ip + "-HTTPS.png"):
         profile = webdriver.ChromeOptions()
-        profile.accept_insecure_certs = True
-        profile.headless = True
+        profile.accept_insecure_certs = settings.CoreSettings.insecure_certs
+        profile.headless = settings.CoreSettings.headless
         driver = webdriver.Chrome(options=profile)
-        driver.set_page_load_timeout(30)
+        driver.set_page_load_timeout(settings.CoreSettings.page_load_timeout)
 
         print(f"Trying: {ip}")
         match port:
@@ -39,7 +39,7 @@ def take_screenshot(ip, port):
                     if re.search("ERR_CONNECTION_REFUSED", str(e)):
                         return f"Connection Refused ({ip})"
 
-                time.sleep(3)  # ensure page loads
+                time.sleep(settings.CoreSettings.wait_page_load)  # ensure page loads
                 driver.save_screenshot(os.getcwd() + "/screenshots/" + ip + ".png")
 
             case 443:
@@ -47,11 +47,10 @@ def take_screenshot(ip, port):
                     driver.get(f"https://{ip}")
                 except WebDriverException as e:
                     if re.search("ERR_CONNECTION_REFUSED", str(e)):
-                        return f"Connection Refused ({ip})"
+                        return f"Connection Refused ({ip} (HTTPS))"
 
-                time.sleep(3)  # ensure page loads
+                time.sleep(settings.CoreSettings.wait_page_load)  # ensure page loads
                 driver.save_screenshot(os.getcwd() + "/screenshots/" + ip + "-HTTPS.png")
-
 
 
 def main():
